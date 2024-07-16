@@ -1,12 +1,12 @@
-_base_ = ['co_dino_5scale_r50_8xb2_1x_coco.py']
+_base_ = ['../../../../mmdetection/projects/CO-DETR/configs/codino/co_dino_5scale_r50_8xb2_1x_coco.py']
 
 # pretrained = 'https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_large_patch4_window12_384_22k.pth'  # noqa
 # load_from = 'https://download.openmmlab.com/mmdetection/v3.0/codetr/co_dino_5scale_swin_large_16e_o365tococo-614254c9.pth'  # noqa
 
-pretrained = '/home/chli/chLi/Model/Swin/swin_large_patch4_window12_384_22k.pth'
+pretrained = '/home/chli/Model/Swin/swin_large_patch4_window12_384_22k.pth'
 load_from = '/home/chli/chLi/Model/Co-DETR/co_dino_5scale_swin_large_16e_o365tococo-614254c9.pth'
 
-data_root = '/home/chli/Dataset/X-Ray/train/annotations/instances_default.json'
+data_root = '/home/chli/Dataset/X-Ray/'
 metainfo = {
     'classes': ('knife', 'wrench', 'glassbottle', 'drinkbottle', 'powerbank', 'umbrella', 'metalcup', 'lighter'),
     'palette': [
@@ -59,16 +59,8 @@ train_pipeline = [
             [
                 dict(
                     type='RandomChoiceResize',
-                    scales=[(480, 2048), (512, 2048), (544, 2048), (576, 2048),
-                            (608, 2048), (640, 2048), (672, 2048), (704, 2048),
-                            (736, 2048), (768, 2048), (800, 2048), (832, 2048),
-                            (864, 2048), (896, 2048), (928, 2048), (960, 2048),
-                            (992, 2048), (1024, 2048), (1056, 2048),
-                            (1088, 2048), (1120, 2048), (1152, 2048),
-                            (1184, 2048), (1216, 2048), (1248, 2048),
-                            (1280, 2048), (1312, 2048), (1344, 2048),
-                            (1376, 2048), (1408, 2048), (1440, 2048),
-                            (1472, 2048), (1504, 2048), (1536, 2048)],
+                    scales=[(600, 600), (600, 500), (500, 600), (600, 400), (400, 600),
+                            (500, 400), (400, 500), (600, 300), (300, 600)],
                     keep_ratio=True)
             ],
             [
@@ -76,7 +68,7 @@ train_pipeline = [
                     type='RandomChoiceResize',
                     # The radio of all image in train dataset < 7
                     # follow the original implement
-                    scales=[(400, 4200), (500, 4200), (600, 4200)],
+                    scales=[(400, 600), (500, 600), (600, 600)],
                     keep_ratio=True),
                 dict(
                     type='RandomCrop',
@@ -85,16 +77,8 @@ train_pipeline = [
                     allow_negative_crop=True),
                 dict(
                     type='RandomChoiceResize',
-                    scales=[(480, 2048), (512, 2048), (544, 2048), (576, 2048),
-                            (608, 2048), (640, 2048), (672, 2048), (704, 2048),
-                            (736, 2048), (768, 2048), (800, 2048), (832, 2048),
-                            (864, 2048), (896, 2048), (928, 2048), (960, 2048),
-                            (992, 2048), (1024, 2048), (1056, 2048),
-                            (1088, 2048), (1120, 2048), (1152, 2048),
-                            (1184, 2048), (1216, 2048), (1248, 2048),
-                            (1280, 2048), (1312, 2048), (1344, 2048),
-                            (1376, 2048), (1408, 2048), (1440, 2048),
-                            (1472, 2048), (1504, 2048), (1536, 2048)],
+                    scales=[(600, 600), (600, 500), (500, 600), (600, 400), (400, 600),
+                            (500, 400), (400, 500), (600, 300), (300, 600)],
                     keep_ratio=True)
             ]
         ]),
@@ -103,7 +87,7 @@ train_pipeline = [
 
 test_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='Resize', scale=(2048, 1280), keep_ratio=True),
+    dict(type='Resize', scale=(600, 600), keep_ratio=True),
     dict(type='LoadAnnotations', with_bbox=True),
     dict(
         type='PackDetInputs',
@@ -112,7 +96,7 @@ test_pipeline = [
 ]
 
 train_dataloader = dict(
-    batch_size=1,
+    batch_size=2,
     num_workers=1,
     dataset=dict(
         pipeline=train_pipeline,
@@ -146,3 +130,5 @@ param_scheduler = [
         milestones=[8],
         gamma=0.1)
 ]
+
+visualizer=dict(type='Visualizer', vis_backends=[dict(type='TensorboardVisBackend')])
