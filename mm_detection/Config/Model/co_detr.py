@@ -4,7 +4,7 @@ _base_ = ['../../../../mmdetection/projects/CO-DETR/configs/codino/co_dino_5scal
 # load_from = 'https://download.openmmlab.com/mmdetection/v3.0/codetr/co_dino_5scale_swin_large_16e_o365tococo-614254c9.pth'  # noqa
 
 pretrained = '/home/chli/Model/Swin/swin_large_patch4_window12_384_22k.pth'
-load_from = '/home/chli/chLi/Model/Co-DETR/co_dino_5scale_swin_large_16e_o365tococo-614254c9.pth'
+load_from = '/home/chli/Model/Co-DETR/co_dino_5scale_swin_large_16e_o365tococo-614254c9.pth'
 
 data_root = '/home/chli/Dataset/X-Ray/'
 metainfo = {
@@ -97,7 +97,7 @@ test_pipeline = [
 
 train_dataloader = dict(
     batch_size=2,
-    num_workers=1,
+    num_workers=2,
     dataset=dict(
         pipeline=train_pipeline,
         data_root=data_root,
@@ -105,6 +105,8 @@ train_dataloader = dict(
         ann_file='train/annotations/instances_default.json',
         data_prefix=dict(img='train/images/')))
 val_dataloader = dict(
+    batch_size=2,
+    num_workers=2,
     dataset=dict(
         pipeline=test_pipeline,
         data_root=data_root,
