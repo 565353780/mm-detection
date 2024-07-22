@@ -2,8 +2,8 @@
 # load_from = 'https://download.openmmlab.com/mmdetection/v3.0/codetr/co_dino_5scale_swin_large_16e_o365tococo-614254c9.pth'  # noqa
 
 pretrained = '/home/chli/Model/Swin/swin_large_patch4_window12_384_22k.pth'
-load_from = '/home/chli/Model/Co-DETR/co_dino_5scale_swin_large_16e_o365tococo-614254c9.pth'
-load_from = '/home/chli/github/XRay/mmdetection/work_dirs/co_detr/xray-v1.pth'
+# load_from = '/home/chli/Model/Co-DETR/co_dino_5scale_swin_large_16e_o365tococo-614254c9.pth'
+load_from = '/home/chli/github/XRay/mm-detection/output/co_detr/xray-v1.pth'
 resume = False
 
 data_root = '/home/chli/Dataset/X-Ray/'
@@ -33,7 +33,7 @@ max_iters = 27000000
 batch_size = 3
 num_workers = 3
 num_gpu = 1
-lr = 1e-4
+lr = 1e-5
 
 work_dir = '/home/chli/github/XRay/mm-detection/output/co_detr'
 
@@ -212,7 +212,7 @@ model = dict(
             num_co_heads=2,
             num_feature_levels=5,
             type='CoDinoTransformer',
-            with_coord_feat=False),
+            with_coord_feat=True),
         type='CoDINOHead'),
     roi_head=[
         dict(
@@ -227,7 +227,7 @@ model = dict(
                 loss_cls=dict(
                     loss_weight=1.0 * num_dec_layer * loss_lambda,
                     type='CrossEntropyLoss',
-                    use_sigmoid=False),
+                    use_sigmoid=True),
                 num_classes=num_classes,
                 reg_class_agnostic=False,
                 reg_decoded_bbox=True,
@@ -411,14 +411,14 @@ train_dataloader = dict(
         filter_cfg=dict(filter_empty_gt=False, min_size=32),
         metainfo=metainfo,
         pipeline=train_pipeline,
-        type='CocoDataset'),
+        type=dataset_type),
     num_workers=num_workers,
     persistent_workers=True,
     sampler=dict(_scope_='mmdet', shuffle=True, type='DefaultSampler'))
 
 val_cfg = dict(_scope_='mmdet', type='ValLoop')
 
-test_pipeline = [
+val_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(keep_ratio=True, scale=image_size, type='Resize'),
     dict(type='LoadAnnotations', with_bbox=True),
@@ -442,9 +442,9 @@ val_dataloader = dict(
         data_prefix=dict(img='val/images/'),
         data_root=data_root,
         metainfo=metainfo,
-        pipeline=test_pipeline,
+        pipeline=val_pipeline,
         test_mode=True,
-        type='CocoDataset'),
+        type=dataset_type),
     drop_last=False,
     num_workers=num_workers,
     persistent_workers=True,
@@ -459,6 +459,9 @@ val_evaluator = dict(
     type='CocoMetric')
 
 test_cfg = dict(_scope_='mmdet', type='TestLoop')
+
+test_pipeline = val_pipeline
+
 
 test_dataloader = val_dataloader
 
