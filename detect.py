@@ -30,6 +30,7 @@ def renderResult(model, image: np.ndarray, result) -> bool:
 config_file = '/home/chli/github/XRay/mm-detection/mm_detection/Config/co_detr_xray_v1.py'
 checkpoint_file = '/home/chli/github/XRay/mm-detection/output/co_detr/xray-v1.pth'
 test_image_folder_path = '/home/chli/Dataset/X-Ray/test1/'
+score_threshold = 0.3
 device = 'cuda:0'
 render = False
 
@@ -52,7 +53,7 @@ with torch.no_grad():
 
         image_file_path = test_image_folder_path + image_filename
 
-        image = mmcv.imread(image_file_path, channel_order='rgb')
+        image = mmcv.imread(image_file_path, channel_order='bgr')
 
         result = inference_detector(model, image)
 
@@ -64,7 +65,7 @@ with torch.no_grad():
         if render:
             renderResult(model, image, result)
 
-        valid_bbox_mask = scores >= 0.3
+        valid_bbox_mask = scores >= score_threshold
 
         for i in range(8):
             current_label_mask = (labels == i) & valid_bbox_mask
@@ -74,11 +75,11 @@ with torch.no_grad():
 
             current_label_results = np.hstack([current_label_bboxes, current_label_scores.reshape(-1, 1)])
 
-            current_results.append(current_label_bboxes.tolist())
+            current_results.append(current_label_results.tolist())
 
         results_list.append(current_results)
 
     os.makedirs('./output/', exist_ok=True)
 
-    with open('./output/co-detr-xray-v1-train4k-rgb-no_scale.json', 'w') as f:
+    with open('./output/co-detr-xray-v1-train4k.json', 'w') as f:
         json.dump(results_list, f)
