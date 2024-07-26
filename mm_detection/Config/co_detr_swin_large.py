@@ -3,12 +3,14 @@
 
 pretrained = '/home/chli/Model/Swin/swin_large_patch4_window12_384_22k.pth'
 # load_from = '/home/chli/Model/Co-DETR/co_dino_5scale_swin_large_16e_o365tococo-614254c9.pth'
-load_from = '/home/chli/github/XRay/mm-detection/output/co_detr/xray-v1.pth'
+load_from = '/home/chli/github/XRay/mm-detection/output/co_detr/xray-v2.pth'
 resume = False
 
 data_root = '/home/chli/Dataset/X-Ray/'
-train_json = 'train/annotations/instances_default.json'
-val_json = 'val/annotations/instances_default.json'
+train_images = 'images/'
+val_images = 'images/'
+train_json = 'json/train-full.json'
+val_json = 'json/val-50.json'
 dataset_type = 'CocoDataset'
 num_classes = 8
 image_size = (640, 640)
@@ -28,7 +30,7 @@ metainfo = {
 
 num_dec_layer = 6
 loss_lambda = 2.0
-max_epochs = 32
+max_epochs = 16
 max_iters = 27000000
 batch_size = 3
 num_workers = 3
@@ -406,7 +408,7 @@ train_dataloader = dict(
     dataset=dict(
         ann_file=train_json,
         backend_args=None,
-        data_prefix=dict(img='train/images/'),
+        data_prefix=dict(img=train_images),
         data_root=data_root,
         filter_cfg=dict(filter_empty_gt=False, min_size=32),
         metainfo=metainfo,
@@ -439,7 +441,7 @@ val_dataloader = dict(
         _scope_='mmdet',
         ann_file=val_json,
         backend_args=None,
-        data_prefix=dict(img='val/images/'),
+        data_prefix=dict(img=val_images),
         data_root=data_root,
         metainfo=metainfo,
         pipeline=val_pipeline,

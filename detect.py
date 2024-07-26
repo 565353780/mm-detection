@@ -31,13 +31,14 @@ def renderResult(model, image: np.ndarray, result, pred_score_thr: float = 0.3, 
 
     return True
 
-config_file = '/home/chli/github/XRay/mm-detection/mm_detection/Config/co_detr_xray_v1.py'
-checkpoint_file = '/home/chli/github/XRay/mm-detection/output/co_detr/xray-v1.pth'
-test_image_folder_path = '/home/chli/Dataset/X-Ray/test1/'
-save_folder_name = 'co-detr-train4k-thr01'
-score_threshold = 0.01
+config_file = '/home/chli/github/XRay/mm-detection/mm_detection/Config/co_detr_swin_large.py'
+checkpoint_file = '/home/chli/github/XRay/mm-detection/output/co_detr/xray-v2.pth'
+test_image_folder_path = '/home/chli/Dataset/X-Ray/test2/'
+save_folder_name = 'co-detr-train_full-thr001-test2'
+score_threshold = 0.001
 device = 'cuda:0'
 render = False
+save_images = False
 
 save_folder_path = './output/' + save_folder_name
 os.makedirs(save_folder_path + '/', exist_ok=True)
@@ -70,7 +71,12 @@ with torch.no_grad():
         labels = pred_instances.labels.detach().clone().cpu().numpy()
         scores = pred_instances.scores.detach().clone().cpu().numpy()
 
-        renderResult(model, image, result, score_threshold, render, save_folder_path + '/' + str(i) + '.jpg')
+        if save_images:
+            out_file = save_folder_path + '/' + str(i) + '.jpg'
+        else:
+            out_file = None
+
+        renderResult(model, image, result, score_threshold, render, out_file)
 
         valid_bbox_mask = scores >= score_threshold
 
